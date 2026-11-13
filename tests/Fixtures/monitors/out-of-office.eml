@@ -1,0 +1,8 @@
+Return-Path: <{{FROM}}>
+From: Away Person <{{FROM}}>
+To: monitor@platform.test
+Subject: Out of office until Monday
+Message-ID: <monitor-3@dest.example>
+Content-Type: text/plain; charset=utf-8
+
+I am away from my desk and will reply when I return.

@@ -1,0 +1,52 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Policies;
+
+use App\Models\CustomerLimit;
+use App\Models\User;
+use App\Policies\Concerns\DeniesNonAdminActors;
+/**
+ * Per-customer quota override rows (spec §3.4 F-3.4-008): operator data,
+ * mirrors CustomerGroupLimitPolicy.
+ */
+use App\Support\Roles\RoleChecker;
+
+class CustomerLimitPolicy
+{
+    use DeniesNonAdminActors;
+
+    public function __construct(private readonly RoleChecker $checker) {}
+
+    public function viewAny(User $user): bool
+    {
+        return $this->checker->hasActivePermission($user, 'customers.view');
+    }
+
+    public function view(User $user, CustomerLimit $limit): bool
+    {
+        return $this->viewAny($user);
+    }
+
+    public function create(User $user): bool
+    {
+        return $this->canManage($user);
+    }
+
+    public function update(User $user, CustomerLimit $limit): bool
+    {
+        return $this->canManage($user);
+    }
+
+    public function delete(User $user, CustomerLimit $limit): bool
+    {
+        return $this->canManage($user);
+    }
+
+    private function canManage(User $user): bool
+    {
+        return $this->checker->hasActivePermission($user, 'customers.update')
+            || $this->checker->hasActivePermission($user, 'customers.manage');
+    }
+}

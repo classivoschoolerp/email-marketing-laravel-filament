@@ -1,0 +1,174 @@
+# Local & prod parity stack (spec §0.1 F-0.1-011, §6.9 F-6.9-005).
+#
+# One-command deployment:
+#   cp .env.docker .env && docker compose up -d && ./docker/bootstrap.sh
+#
+# WP-24 additions: an `env_file` so every service shares one source of truth,
+# health checks on app/mysql/redis (`depends_on: condition: service_healthy`
+# removes the "migrate before MySQL is up" race), and a worker-heartbeat
+# process feeding the §6.6 worker/node registry.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=emp
+      - DB_USERNAME=emp
+      - DB_PASSWORD=secret
+      - REDIS_HOST=redis
+      - QUEUE_CONNECTION=redis
+      - CACHE_STORE=redis
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=mailpit
+      - MAIL_PORT=1025
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # php-fpm has no HTTP surface; probe the framework itself.
+      test: ["CMD", "php", "artisan", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    healthcheck:
+      # §6.9 F-6.9-007 — the same endpoint a load balancer should probe.
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Sending workers scale independently of the web node (spec §0.1 distributed deployment).
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: php artisan queue:work --queue=transactional,campaigns-high,campaigns-send,automation,imports,bounces,webhooks,exports,maintenance --tries=3 --max-time=3600
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=emp
+      - DB_USERNAME=emp
+      - DB_PASSWORD=secret
+      - REDIS_HOST=redis
+      - QUEUE_CONNECTION=redis
+      - CACHE_STORE=redis
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      replicas: 2
+
+  # §6.6 F-6.6-008/009: keeps each node visible in the admin worker registry
+  # between jobs and honours the graceful-drain flag.
+  heartbeat:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: php artisan queue:heartbeat --queues=transactional,campaigns-send,imports,exports,maintenance --interval=30
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=emp
+      - DB_USERNAME=emp
+      - DB_PASSWORD=secret
+      - REDIS_HOST=redis
+      - QUEUE_CONNECTION=redis
+      - CACHE_STORE=redis
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=emp
+      - DB_USERNAME=emp
+      - DB_PASSWORD=secret
+      - REDIS_HOST=redis
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      - MYSQL_DATABASE=emp
+      - MYSQL_USER=emp
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=root
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "33060:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uemp", "-psecret"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+
+volumes:
+  mysql-data:
+  redis-data:

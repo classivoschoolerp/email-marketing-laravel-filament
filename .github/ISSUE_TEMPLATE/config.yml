@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/classivoschoolerp/email-marketing-laravel-filament/blob/main/SECURITY.md
+    about: Please report security issues privately, not as an issue.
+  - name: Installation, hosting or custom development
+    url: https://classivoerp.com
+    about: Paid installation, hosted service and custom features — info@classivoerp.com

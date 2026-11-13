@@ -1,0 +1,6 @@
+# Minimal OpenSSL configuration used by App\Services\Dkim\GenerateDkimKeypair
+# as a fallback on systems (notably Windows PHP builds) where no default
+# openssl.cnf is configured. Key generation needs nothing beyond a valid file.
+openssl_conf = openssl_init
+
+[openssl_init]

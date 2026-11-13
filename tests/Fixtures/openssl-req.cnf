@@ -1,0 +1,21 @@
+# OpenSSL configuration for TEST certificate generation only (WP-46).
+#
+# resources/openssl/openssl.cnf (D-37) is deliberately minimal — key
+# generation needs nothing more — but openssl_csr_new() requires a [req]
+# section, so the VMC validator's test builds its stand-in certificate with
+# this file instead. Nothing in app/ reads it.
+
+openssl_conf = openssl_init
+
+[openssl_init]
+
+[req]
+default_bits = 2048
+default_md = sha256
+distinguished_name = req_distinguished_name
+prompt = no
+
+[req_distinguished_name]
+CN = Acme Inc
+O = Acme Inc
+C = US

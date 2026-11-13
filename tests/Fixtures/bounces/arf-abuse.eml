@@ -1,0 +1,40 @@
+Return-Path: <fbl@mailprovider.example>
+From: Feedback Loop <fbl@mailprovider.example>
+To: fbl@platform.test
+Subject: Abuse report for message from acme.example
+Message-ID: <arf-report-1@mailprovider.example>
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=feedback-report; boundary="BOUNDARY-ARF-1"
+
+--BOUNDARY-ARF-1
+Content-Type: text/plain; charset=utf-8
+
+This is an email abuse report for an email message received from
+acme.example on Thu, 8 Oct 2026 12:00:00 +0000.
+
+--BOUNDARY-ARF-1
+Content-Type: message/feedback-report
+
+Feedback-Type: abuse
+User-Agent: ProviderFBL/2.1
+Version: 1
+Original-Mail-From: <bounces@platform.test>
+Original-Rcpt-To: complainer@dest.example
+Arrival-Date: Thu, 8 Oct 2026 12:00:00 +0000
+Source-IP: 192.0.2.10
+
+--BOUNDARY-ARF-1
+Content-Type: message/rfc822
+
+Return-Path: <bounces@platform.test>
+Message-ID: <{{MESSAGE_ID}}>
+From: Acme News <news@acme.example>
+To: complainer@dest.example
+Subject: October newsletter
+X-EMP-Campaign: {{CAMPAIGN_UID}}
+X-EMP-Subscriber: {{SUBSCRIBER_UID}}
+Content-Type: text/plain; charset=utf-8
+
+Hello, here is our October newsletter.
+
+--BOUNDARY-ARF-1--

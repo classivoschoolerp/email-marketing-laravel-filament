@@ -1,0 +1,217 @@
+/*
+ * F-2.4.2-001 — automation builder canvas chrome (spec §2.4.2).
+ *
+ * Plain CSS, no framework additions: the grid stage, the transformed world,
+ * absolutely positioned node cards, branch slots, connector wires and the
+ * minimap. Dark mode follows Filament's `.dark` class on <html>.
+ */
+
+.emp-canvas {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.emp-canvas__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.emp-canvas__stage {
+    position: relative;
+    overflow: hidden;
+    height: 70vh;
+    min-height: 26rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgb(228 228 231);
+    background-color: rgb(250 250 250);
+    background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    touch-action: none;
+    cursor: grab;
+}
+
+.emp-canvas__stage:active {
+    cursor: grabbing;
+}
+
+.dark .emp-canvas__stage {
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: rgb(24 24 27);
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+.emp-canvas__world {
+    position: absolute;
+    inset: 0 auto auto 0;
+    transform-origin: 0 0;
+}
+
+.emp-canvas__wires {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.emp-canvas__wire {
+    fill: none;
+    stroke: rgb(161 161 170);
+    stroke-width: 2;
+}
+
+.dark .emp-canvas__wire {
+    stroke: rgba(255, 255, 255, 0.28);
+}
+
+.emp-canvas__node {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgb(228 228 231);
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    cursor: grab;
+    user-select: none;
+}
+
+.dark .emp-canvas__node {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgb(24 24 27);
+}
+
+.emp-canvas__node.is-dragging {
+    pointer-events: none;
+    opacity: 0.85;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    cursor: grabbing;
+}
+
+.emp-canvas__node-title {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.emp-canvas__node-summary {
+    font-size: 0.6875rem;
+    color: rgb(113 113 122);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.emp-canvas__node-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.emp-canvas__slot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 999px;
+    border: 1px dashed rgb(212 212 216);
+    background: rgba(255, 255, 255, 0.92);
+    font-size: 0.625rem;
+    color: rgb(113 113 122);
+    white-space: nowrap;
+}
+
+.dark .emp-canvas__slot {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(24, 24, 27, 0.92);
+}
+
+.emp-canvas__slot.is-target {
+    border-style: solid;
+    border-color: rgb(59 130 246);
+    color: rgb(37 99 235);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.emp-canvas__minimap {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    width: 160px;
+    height: 110px;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    border: 1px solid rgb(228 228 231);
+    background: rgba(255, 255, 255, 0.9);
+    cursor: crosshair;
+}
+
+.dark .emp-canvas__minimap {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(24, 24, 27, 0.9);
+}
+
+.emp-canvas__minidot {
+    position: absolute;
+    border-radius: 2px;
+    background: rgb(161 161 170);
+}
+
+.dark .emp-canvas__minidot {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.emp-canvas__miniview {
+    position: absolute;
+    border: 1px solid rgb(59 130 246);
+    background: rgba(59, 130, 246, 0.12);
+    pointer-events: none;
+}
+
+/* ==================================================================== *
+ *  §4.8 F-4.8-001 — phone layout (WP-40)
+ * ==================================================================== *
+ *  Three concrete failures at 375px, fixed here rather than in the blade
+ *  because they are all properties of this stylesheet's own classes:
+ *
+ *  1. `.emp-canvas__stage` sets `touch-action: none` so the pointer
+ *     handlers can pan the canvas. On a touch device that turns a 416px-
+ *     tall band of the page into a scroll dead zone. Restoring
+ *     `touch-action: pan-y` gives the page back its vertical scroll while
+ *     leaving horizontal panning to the pointer handlers.
+ *  2. The 160×110 minimap is 43 % of a 375px viewport and sits on top of
+ *     the node cards. It is a convenience on a desktop and an obstruction
+ *     on a phone, so it is hidden.
+ *  3. 70vh of canvas plus a four-row toolbar leaves almost no room for the
+ *     node inspector; 55vh keeps the stage usable without swallowing the
+ *     screen.
+ */
+@media (max-width: 640px) {
+    .emp-canvas__stage {
+        height: 55vh;
+        min-height: 20rem;
+        touch-action: pan-y;
+    }
+
+    .emp-canvas__minimap,
+    .emp-canvas__miniview {
+        display: none;
+    }
+
+    .emp-canvas__bar {
+        gap: 0.375rem;
+    }
+}

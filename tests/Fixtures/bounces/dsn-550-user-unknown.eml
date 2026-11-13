@@ -1,0 +1,49 @@
+Return-Path: <>
+From: Mail Delivery System <MAILER-DAEMON@mx.example.net>
+To: bounces@platform.test
+Subject: Undelivered Mail Returned to Sender
+Message-ID: <dsn-report-1@mx.example.net>
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status; boundary="BOUNDARY-DSN-1"
+
+--BOUNDARY-DSN-1
+Content-Type: text/plain; charset=utf-8
+
+This is the mail system at host mx.example.net.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients.
+
+<victim@dest.example>: host mx.dest.example said: 550 5.1.1
+    <victim@dest.example>: Recipient address rejected: User unknown in
+    virtual mailbox table (in reply to RCPT TO command)
+
+--BOUNDARY-DSN-1
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; mx.example.net
+X-Postfix-Queue-ID: 12345ABCDE
+
+Final-Recipient: rfc822; victim@dest.example
+Original-Recipient: rfc822; victim@dest.example
+Action: failed
+Status: 5.1.1
+Remote-MTA: dns; mx.dest.example
+Diagnostic-Code: smtp; 550 5.1.1 <victim@dest.example>: Recipient address
+    rejected: User unknown in virtual mailbox table
+
+--BOUNDARY-DSN-1
+Content-Type: message/rfc822
+
+Return-Path: <bounces@platform.test>
+Message-ID: <{{MESSAGE_ID}}>
+From: Acme News <news@acme.example>
+To: victim@dest.example
+Subject: October newsletter
+X-EMP-Campaign: {{CAMPAIGN_UID}}
+X-EMP-Subscriber: {{SUBSCRIBER_UID}}
+Content-Type: text/plain; charset=utf-8
+
+Hello, here is our October newsletter.
+
+--BOUNDARY-DSN-1--

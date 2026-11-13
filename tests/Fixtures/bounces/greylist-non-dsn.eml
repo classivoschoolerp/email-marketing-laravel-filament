@@ -1,0 +1,14 @@
+Return-Path: <postmaster@dest.example>
+From: postmaster@dest.example
+To: bounces@platform.test
+Subject: Mail delivery deferred: returning message to sender
+Message-ID: <greylist-1@dest.example>
+Content-Type: text/plain; charset=utf-8
+
+Delivery to the following recipient has been delayed:
+
+    <grey@dest.example>
+
+Reason: 451 4.7.1 Greylisted, please try again later.
+
+This is not a standards-compliant delivery status notification.
