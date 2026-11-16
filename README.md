@@ -36,6 +36,11 @@ workspace) where your team builds lists, campaigns and templates.
 - Bounce and feedback-loop processing, mailbox monitors
 - Global and per-workspace blacklists, suppression lists, unsubscribe and block requests
 
+### Automation
+- Visual node-based automation builder with triggers, actions and logic nodes (delay, if/else, split, goal, jump)
+- Versioned workflows with run logs, per-node reports, simulation and bulk actions
+- Inbound webhook trigger and manual enrolment from a subscriber profile
+
 ### Admin panel
 - Single company: one operator team and one customer workspace
 - Users, user groups and roles with a permission matrix; locked system roles

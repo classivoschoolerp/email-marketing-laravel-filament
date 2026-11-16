@@ -157,13 +157,38 @@ enum AutomationNodeType: string
         };
     }
 
+    /**
+     * Node types that drive another module (SMS, WhatsApp, web push, webhooks,
+     * CRM, surveys, e-commerce) are offered only while that module is
+     * installed.
+     */
+    public function isAvailable(): bool
+    {
+        $requires = match ($this) {
+            self::TriggerSurveyCompleted => \App\Models\Survey::class,
+            self::TriggerDealStageChanged, self::TriggerLeadScore,
+            self::ActionCrm, self::ActionLeadScore, self::ActionAssignOwner => \App\Services\Crm\LeadScorer::class,
+            self::TriggerCartAbandoned, self::TriggerOrderPlaced, self::TriggerOrderShipped,
+            self::TriggerProductViewed, self::TriggerBackInStock, self::TriggerPageVisited => \App\Models\StoreConnection::class,
+            self::ActionWebhook => \App\Services\Webhooks\WebhookDispatcher::class,
+            self::ActionSms => \App\Services\Sms\SmsSender::class,
+            self::ActionWhatsApp => \App\Services\WhatsApp\WhatsAppSender::class,
+            self::ActionWebPush => \App\Services\WebPush\WebPushSender::class,
+            default => null,
+        };
+
+        return $requires === null || class_exists($requires);
+    }
+
     /** @param list<self> $cases @return array<string, string> */
     public static function optionsFor(array $cases): array
     {
         $options = [];
 
         foreach ($cases as $case) {
-            $options[$case->value] = $case->label();
+            if ($case->isAvailable()) {
+                $options[$case->value] = $case->label();
+            }
         }
 
         return $options;

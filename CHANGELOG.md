@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.0
+
+- Automations: visual workflow builder with triggers, actions and logic nodes, versioning, run logs and reports.
+
+### Fixed
+
+- Audit log entries and new-subscriber notifications are now recorded in the base edition.
+
 ## v1.0.0 — first public release
 
 - First open-source release under the MIT License.
