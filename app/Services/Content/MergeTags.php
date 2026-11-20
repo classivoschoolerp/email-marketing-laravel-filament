@@ -110,6 +110,10 @@ class MergeTags
         // Special forms (F-4.1-008/009) — matched with their argument syntax
         'RANDOM_CONTENT',
         'FETCH_URL',
+        // WP-31 (F-2.8-008): {SURVEY_URL:<survey_uid>} links a campaign to a
+        // survey; resolved by SurveyLinkResolver, which appends the
+        // recipient's uid so the response comes back identified.
+        SurveyLinkResolver::TAG,
     ];
 
     public function __construct(

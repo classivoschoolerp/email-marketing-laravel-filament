@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.0
+
+- Surveys: multi-step surveys, public survey pages, campaign merge tag, statistics, export and answer-based segments.
+
 ## v1.1.0
 
 - Automations: visual workflow builder with triggers, actions and logic nodes, versioning, run logs and reports.

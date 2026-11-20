@@ -41,6 +41,12 @@ workspace) where your team builds lists, campaigns and templates.
 - Versioned workflows with run logs, per-node reports, simulation and bulk actions
 - Inbound webhook trigger and manual enrolment from a subscriber profile
 
+### Surveys
+- Multi-step surveys with branching questions and public survey pages
+- Survey links in campaigns through a merge tag, so answers come back tied to the subscriber
+- Response statistics, CSV export and segments built from answers
+- An automation trigger for completed surveys
+
 ### Admin panel
 - Single company: one operator team and one customer workspace
 - Users, user groups and roles with a permission matrix; locked system roles
