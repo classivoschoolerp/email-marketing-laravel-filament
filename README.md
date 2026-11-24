@@ -47,6 +47,11 @@ workspace) where your team builds lists, campaigns and templates.
 - Response statistics, CSV export and segments built from answers
 - An automation trigger for completed surveys
 
+### Landing pages
+- Landing pages built with the GrapesJS editor, with templates and revisions
+- A/B variants, visit and conversion statistics
+- Password-protected pages, custom code and a public URL per page
+
 ### Admin panel
 - Single company: one operator team and one customer workspace
 - Users, user groups and roles with a permission matrix; locked system roles

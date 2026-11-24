@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0
+
+- Landing pages: GrapesJS editor, templates, revisions, A/B variants, visit and conversion statistics.
+
 ## v1.2.0
 
 - Surveys: multi-step surveys, public survey pages, campaign merge tag, statistics, export and answer-based segments.
